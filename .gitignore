@@ -1,0 +1,14 @@
+# Локальные материалы исследований
+*.log
+*.dmp
+*.core
+*.exe
+*.dll
+*.asi
+*.zip
+*.7z
+*.tar.*
+.local/
+artifacts/
+prefix/
+__pycache__/
