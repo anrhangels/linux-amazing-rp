@@ -12,3 +12,16 @@
 artifacts/
 prefix/
 __pycache__/
+
+# Private binary-analysis artifacts and temporary compatibility experiments
+*.bin
+*.raw
+*.dump
+*.trace
+*.AppImage
+*.cab
+*.msu
+*.reg
+memory-dumps/
+raw-logs/
+private/
