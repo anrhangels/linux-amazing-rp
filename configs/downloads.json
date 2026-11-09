@@ -1,0 +1,32 @@
+{
+  "proton": {
+    "url": "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton11-11/GE-Proton11-11-x86_64.tar.gz",
+    "sha256": "aa85986cada5709aa8bbfa8add7f3bfb925cbe15710c98995898d308ff2ca3c1",
+    "directory": "GE-Proton11-11-x86_64"
+  },
+  "umu": {
+    "url": "https://github.com/Faugus/umu-launcher/releases/download/1.4.4-patch/umu-run",
+    "sha256": "d3f2f0248e5ad39a34659a816acda5cde335568b6b9eab8ee0ef0732252465c6"
+  },
+  "schema": 1,
+  "launcher": {
+    "url": "https://large.delivery-amazing.com/launcher/AmazingSetup.exe",
+    "official_hosts": [
+      "large.delivery-amazing.com"
+    ],
+    "maximum_bytes": 100000000
+  },
+  "wmf51": {
+    "url": "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win7-KB3191566-x86.zip",
+    "sha256": "eb7e2c4ce2c6cb24206474a6cb8610d9f4bd3a9301f1cd8963b4ff64e529f563"
+  },
+  "sp1_extraction_only": {
+    "url": "https://catalog.s.download.windowsupdate.com/msdownload/update/software/svpk/2011/02/windows6.1-kb976932-x86_c3516bc5c9e69fee6d9ac4f981f5b95977a8a2fa.exe",
+    "sha256": "e5449839955a22fc4dd596291aff1433b998f9797e1c784232226aba1f8abd97"
+  },
+  "msdelta": {
+    "member": "x86_microsoft-windows-servicingstack_31bf3856ad364e35_6.1.7601.17514_none_0b66cb34258c936f/msdelta.dll",
+    "sha256": "30489f03af50f2fee196fa2f47e4e585ed0be1fe360e7fcda2b684526524c1c6"
+  },
+  "dxvk_source_sha256": "a826bbbc540bb864d79cbaa6a56fbd4cf38737e3b2e2f47c0933f254530d8eaf"
+}

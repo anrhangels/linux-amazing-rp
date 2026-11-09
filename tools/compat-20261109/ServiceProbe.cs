@@ -1,0 +1,2 @@
+using System;using System.IO;using System.ServiceProcess;
+class ServiceProbe {static void Main(){string text;try{using(var s=new ServiceController("AmazingService")){if(s.Status==ServiceControllerStatus.Stopped)s.Start();s.WaitForStatus(ServiceControllerStatus.Running,TimeSpan.FromSeconds(45));text="RUNNING\n"+s.ServiceName;}}catch(Exception e){text=e.ToString();}File.WriteAllText(@"C:\amazing-compat\service-probe.txt",text);}}

@@ -25,3 +25,8 @@ __pycache__/
 memory-dumps/
 raw-logs/
 private/
+
+# Local installer state and generated files
+*.part
+.pytest_cache/
+.venv/

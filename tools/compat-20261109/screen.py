@@ -1,8 +1,9 @@
 """Select the Xwayland primary output and fullscreen only the Amazing game, without focus changes."""
-import ctypes as C,ctypes.util,json,subprocess,time,threading,re
+import ctypes as C,ctypes.util,json,subprocess,time,threading,re,shutil
 from pathlib import Path
 TITLE=b'AMAZING ONLINE'
 def select_screen():
+ if not shutil.which('hyprctl'):return select_x11_screen()
  monitors=json.loads(subprocess.check_output(['hyprctl','monitors','-j']))
  active=[m for m in monitors if not m.get('disabled') and m.get('dpmsStatus',True)]
  if not active:raise RuntimeError('No active monitor')
@@ -81,3 +82,17 @@ def prepare_primary(screen):
   if previous in connected:subprocess.run(['xrandr','--output',previous,'--primary'],capture_output=True)
   elif target in connected:subprocess.run(['xrandr','--output',target,'--noprimary'],capture_output=True)
  return restore
+
+def select_x11_screen():
+ output=subprocess.check_output(['xrandr','--query'],text=True,stderr=subprocess.DEVNULL)
+ screens=[];current=None
+ for line in output.splitlines():
+  m=re.match(r'^(\S+) connected(?: (primary))? (\d+)x(\d+)([+-]\d+)([+-]\d+)',line)
+  if m:
+   current={'monitor':m[1],'physical_width':int(m[3]),'physical_height':int(m[4]),'width':int(m[3]),'height':int(m[4]),'scale':1,'refresh_hz':60,'workspace':None,'primary':bool(m[2])};screens.append(current)
+  elif line and not line[0].isspace():current=None
+  elif current:
+   rate=re.search(r'([0-9.]+)\*',line)
+   if rate:current['refresh_hz']=float(rate[1])
+ if not screens:raise RuntimeError('No active X11 display')
+ return next((m for m in screens if m['primary']),screens[0])

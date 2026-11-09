@@ -1,7 +1,13 @@
 from pathlib import Path
-import struct,json,hashlib
-h=Path.home();ns={};exec(Path(__file__).with_name('pe_reader.py').read_text(),ns)
-p=h/'.local/share/linux-arizona-rp/runners/GE-Proton11-11-x86_64/files/lib/wine/i386-windows/shell32.dll';pe=ns['PE'](p);b=bytearray(pe.b)
+import struct,json,hashlib,argparse
+h=Path.home()
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--runner',type=Path,default=h/'.local/share/linux-arizona-rp/runners/GE-Proton11-11-x86_64')
+parser.add_argument('--output-dir',type=Path,default=h/'.cache/linux-amazing-rp')
+parser.add_argument('--state-dir',type=Path,default=h/'.local/state/linux-amazing-rp/autonomous-research')
+args=parser.parse_args();args.output_dir.mkdir(parents=True,exist_ok=True);args.state_dir.mkdir(parents=True,exist_ok=True,mode=0o700)
+ns={};exec(Path(__file__).with_name('pe_reader.py').read_text(),ns)
+p=args.runner/'files/lib/wine/i386-windows/shell32.dll';pe=ns['PE'](p);b=bytearray(pe.b)
 u16=lambda o:struct.unpack_from('<H',b,o)[0];u32=lambda o:struct.unpack_from('<I',b,o)[0]
 put=lambda o,v:struct.pack_into('<I',b,o,v)
 e=u32(60);opt=e+24;sh=opt+u16(e+20);n=u16(e+6);assert sh+40*(n+1)<=u32(opt+60)
@@ -36,9 +42,9 @@ b.extend(bytes(raw-len(b)));b.extend(data);size=align(len(data),u32(opt+36));b.e
 q=sh+n*40;b[q:q+40]=bytes(40);b[q:q+8]=b'.arpcomp';struct.pack_into('<IIII',b,q+8,len(data),va,size,raw);put(q+36,0xe0000060)
 struct.pack_into('<H',b,e+6,n+1);put(opt+56,align(va+len(data),u32(opt+32)));put(opt+4,u32(opt+4)+size);put(opt+64,0)
 i=b.find(b'Wine builtin DLL',0,128);assert i>=0;b[i:i+16]=b'Compat PE copy'.ljust(16,b'\0')
-out=h/'.cache/linux-amazing-rp/shell32-forwarder-compat.dll';out.write_bytes(b);out.chmod(0o600)
+out=args.output_dir/'shell32-forwarder-compat.dll';out.write_bytes(b);out.chmod(0o600)
 actual=ns['PE'](out).exports();expected=pe.exports();changed=[str(k) for k in expected if actual.get(k)!=expected[k]];assert set(changed)=={'CommandLineToArgvW',str(base+idx)}
-d=h/'.local/state/linux-amazing-rp/autonomous-research/shell32-forwarder-compat';d.mkdir(mode=0o700,exist_ok=True)
+d=args.state_dir/'shell32-forwarder-compat';d.mkdir(parents=True,mode=0o700,exist_ok=True)
 report={'original_sha256':hashlib.sha256(pe.b).hexdigest(),'compat_sha256':hashlib.sha256(b).hexdigest(),'export':'CommandLineToArgvW','changed_export_keys':changed,'entry_rva':hex(va),'counter_rva':hex(va+144),'iat_LoadLibraryW':hex(load),'iat_GetProcAddress':hex(getproc),'semantics':'stdcall tail call to actual shcore.CommandLineToArgvW; NULL if loader or resolver fails; diagnostic call counter','shared_runner_modified':False}
 f=d/'build.json';f.write_text(json.dumps(report,indent=2));f.chmod(0o600)
 print('Built private shell32 compatibility copy. Only named/ordinal CommandLineToArgvW entry changed; RVA',hex(va))
